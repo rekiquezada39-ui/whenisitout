@@ -2,7 +2,7 @@ const f=require('fs'),P=require('path'),O='dist',z=require('zlib');
 // ══════════ CONFIGURA AQUI ══════════
 const N='WhenIsItOut',DOM='https://whenisitout.pages.dev';
 const MAIL='contact.whenisitout@gmail.com';
-const MVERIFY='';                       // <meta> de verificacion de Monetag
+const MVERIFY='<meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">';
 const ZONAS=[];                          // [['dominio/tag.min.js','zoneId'], ...]
 const SWZONE='';                         // zoneId del sw.js de Monetag
 // ════════════════════════════════════
@@ -372,7 +372,26 @@ try{H=JSON.parse(f.readFileSync(HIST,'utf8'))}catch(x){}
 (async()=>{
 console.log(`\n📺 Building ${N}...\n📥 Fetching TVmaze schedule:`);
 
-const raw=await fetch('https://api.tvmaze.com/schedule/full').then(r=>r.json());
+// descarga con reintentos: la red a veces falla (IPv6 sin ruta, timeout)
+async function baja(url,intentos=5){
+ for(let i=1;i<=intentos;i++){
+  try{
+   const ctrl=new AbortController();
+   const t=setTimeout(()=>ctrl.abort(),45000);
+   const r=await fetch(url,{signal:ctrl.signal,headers:{'User-Agent':'WhenIsItOut/1.0'}});
+   clearTimeout(t);
+   if(!r.ok)throw new Error('HTTP '+r.status);
+   return await r.json();
+  }catch(err){
+   const m=(err&&err.cause&&err.cause.code)||err.code||err.message||'error';
+   if(i===intentos)throw new Error(`No se pudo descargar tras ${intentos} intentos: ${m}`);
+   const espera=i*3;
+   console.log(`   intento ${i}/${intentos} fallo (${m}) — reintentando en ${espera}s...`);
+   await new Promise(r2=>setTimeout(r2,espera*1000));
+  }
+ }
+}
+const raw=await baja('https://api.tvmaze.com/schedule/full');
 console.log(`   ✓ ${raw.length.toLocaleString('en-US')} scheduled episodes`);
 
 // ── agrupar por serie (solo ingles + futuro)
