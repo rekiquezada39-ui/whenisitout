@@ -2,7 +2,7 @@ const f=require('fs'),P=require('path'),O='dist',z=require('zlib');
 // ══════════ CONFIGURA AQUI ══════════
 const N='WhenIsItOut',DOM='https://whenisitout.pages.dev';
 const MAIL='contact.whenisitout@gmail.com';
-const MVERIFY='<meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">';
+const MVERIFY='<meta name="monetag" content="830f2511ef02229941ac4b9ce8df4bad"><meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">';
 const ZONAS=[];                          // [['dominio/tag.min.js','zoneId'], ...]
 const SWZONE='';                         // zoneId del sw.js de Monetag
 // ════════════════════════════════════
