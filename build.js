@@ -3,7 +3,13 @@ const f=require('fs'),P=require('path'),O='dist',z=require('zlib');
 const N='WhenIsItOut',DOM='https://whenisitout.pages.dev';
 const MAIL='contact.whenisitout@gmail.com';
 const MVERIFY='<meta name="monetag" content="830f2511ef02229941ac4b9ce8df4bad"><meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">';
-const ZONAS=[];                          // [['dominio/tag.min.js','zoneId'], ...]
+// Zonas de Monetag. Dos formatos posibles:
+//   ['dominio/ruta.js?z=NNN','']      -> la zona va en la URL (src directo)
+//   ['dominio/tag.min.js','NNN']      -> la zona va como dataset.zone
+const ZONAS=[
+ ['5gvci.com/act/files/tag.min.js?z=11487153',''],
+ ['nap5k.com/tag.min.js','11487154']
+];
 const SWZONE='';                         // zoneId del sw.js de Monetag
 // ════════════════════════════════════
 const s=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -288,8 +294,11 @@ var KEY='ck_wio',box=document.getElementById('ck');
 var _adsYa=false;
 function _iny(){if(_adsYa)return;var Z=window.__ZONAS;if(!Z||!Z.length)return;
  var host=document.body||document.documentElement;if(!host)return;_adsYa=true;
- for(var i=0;i<Z.length;i++){(function(sc,zn){sc.dataset.zone=zn[1];sc.src='https://'+zn[0]})
-  (host.appendChild(document.createElement('script')),Z[i])}
+ for(var i=0;i<Z.length;i++){(function(sc,zn){
+  if(zn[1]){sc.dataset.zone=zn[1]}
+  else{sc.setAttribute('data-cfasync','false');sc.async=true}
+  sc.src='https://'+zn[0];
+ })(host.appendChild(document.createElement('script')),Z[i])}
  _sw();}
 function _sw(){if(!('serviceWorker' in navigator))return;if(location.protocol!=='https:')return;
  if(!window.__SW)return;try{navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(function(){})}catch(e){}}
